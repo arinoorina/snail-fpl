@@ -9671,6 +9671,117 @@ if ("serviceWorker" in navigator) {
 })();
 </script>
 
+<script>
+/* =========================
+   SNAIL SESSION RESET · v5.13
+   If the app has been inactive/backgrounded for 1 hour,
+   the next return/interaction starts from Home again.
+   This is navigation-only: it does NOT clear Vercel/CDN cache.
+========================= */
+(function(){
+  const SESSION_TIMEOUT_MS = 60 * 60 * 1000; // 1 hour
+  const LAST_ACTIVE_KEY = 'snailFplLastActiveAt';
+
+  let lastActiveAt = Date.now();
+  let lastWriteAt = 0;
+
+  try {
+    const saved = Number(localStorage.getItem(LAST_ACTIVE_KEY));
+    if (Number.isFinite(saved) && saved > 0) lastActiveAt = saved;
+  } catch (e) {}
+
+  function saveActivity(force){
+    const now = Date.now();
+    lastActiveAt = now;
+
+    // Avoid writing localStorage on every tiny interaction.
+    if (!force && now - lastWriteAt < 15000) return;
+    lastWriteAt = now;
+
+    try {
+      localStorage.setItem(LAST_ACTIVE_KEY, String(now));
+    } catch (e) {}
+  }
+
+  function sessionExpired(){
+    return Date.now() - lastActiveAt >= SESSION_TIMEOUT_MS;
+  }
+
+  function closeTransientPanels(){
+    const profile = document.getElementById('teamProfileModal');
+    if (profile) profile.classList.remove('open');
+
+    const recap = document.getElementById('gwRecapOverlay');
+    if (recap) {
+      recap.classList.remove('open');
+      recap.setAttribute('aria-hidden', 'true');
+    }
+
+    const exitBox = document.getElementById('snailExitConfirm');
+    if (exitBox) exitBox.classList.remove('show');
+
+    document.body.style.overflow = '';
+  }
+
+  function resetSessionToHome(){
+    closeTransientPanels();
+
+    if (typeof window.showPage === 'function') {
+      window.showPage('homePage');
+    } else if (typeof showPage === 'function') {
+      showPage('homePage');
+    }
+
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    } catch (e) {
+      window.scrollTo(0, 0);
+    }
+  }
+
+  function checkAndReset(){
+    if (!sessionExpired()) return false;
+    resetSessionToHome();
+    saveActivity(true);
+    return true;
+  }
+
+  // When returning to the PWA/tab after it has been in the background.
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'hidden') {
+      saveActivity(true);
+      return;
+    }
+
+    checkAndReset();
+    saveActivity(true);
+  });
+
+  // Covers iOS/Android restoring a frozen PWA from memory.
+  window.addEventListener('pageshow', function(){
+    checkAndReset();
+    saveActivity(true);
+  });
+
+  // If the app was simply left on-screen untouched for >1 hour,
+  // the first interaction returns to Home instead of acting on the old page.
+  ['pointerdown', 'keydown', 'touchstart'].forEach(function(type){
+    window.addEventListener(type, function(event){
+      if (checkAndReset()) {
+        if (event && event.cancelable) event.preventDefault();
+        if (event && typeof event.stopImmediatePropagation === 'function') {
+          event.stopImmediatePropagation();
+        }
+        return;
+      }
+      saveActivity(false);
+    }, true);
+  });
+
+  saveActivity(true);
+})();
+</script>
+
 </body>
 
 </html>

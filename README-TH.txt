@@ -1,6 +1,5 @@
 SNAIL FPL — v5.12 FINAL · SHARED VERCEL CACHE 20 DAYS
 
-
 เป้าหมายของเวอร์ชันนี้
 - คนแรกที่เรียก /api/fpl หลัง Cache ว่าง จะเป็นคนดึงข้อมูลจาก Google Apps Script / Google Sheet
 - หลังจากนั้นผู้ใช้คนอื่นจะได้ข้อมูลจาก Vercel CDN Shared Cache แทน เป็นเวลา 20 วัน
@@ -35,3 +34,8 @@ CACHE POLICY
 
 แผนสำรอง
 - Google Apps Script /exec เดิมยังคงใช้งานได้ และ index.html ยังคงรองรับ google.script.run เหมือนเดิม
+
+
+V5.13 SESSION 1H
+- ถ้าแอปถูกพัก/ไม่ได้ใช้งานเกิน 1 ชั่วโมง เมื่อกลับมาใช้อีกครั้งจะกลับหน้า Home อัตโนมัติ
+- ไม่ล้าง Vercel CDN cache และไม่ทำให้ข้อมูลโหลดใหม่โดยไม่จำเป็น
