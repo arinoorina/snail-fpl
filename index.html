@@ -3865,10 +3865,11 @@
   text-align: right;
 }
 .home-next-gw-unit small {
-  color: #d9c9f2;
-  font-size: 6px;
+  color: #efe6ff;
+  font-size: 9px;
   line-height: 1;
-  font-weight: 900;
+  font-weight: 1000;
+  letter-spacing: .15px;
 }
 .home-next-gw-sep {
   color: rgba(255,255,255,.42);
@@ -4187,8 +4188,8 @@
   .home-next-gw-copy { min-width: 58px; }
   .home-next-gw-label { font-size: 6px; letter-spacing: .7px; }
   .home-next-gw-name { font-size: 10px; }
-  .home-next-gw-unit strong { min-width: 16px; font-size: 13px; }
-  .home-next-gw-unit small { font-size: 5px; }
+  .home-next-gw-unit strong { min-width: 17px; font-size: 14px; }
+  .home-next-gw-unit small { font-size: 8px; font-weight: 1000; }
   .home-table-head, .home-league-row { grid-template-columns: 34px minmax(0,1fr) 42px 22px 46px 14px; column-gap: 4px; padding-left: 5px; padding-right: 5px; }
   .home-team-logo { width: 27px; height: 27px; flex-basis: 27px; }
   .home-team-name { font-size: 11px; }
@@ -9620,16 +9621,79 @@ function renderStatsChipPerformance(){
     }
 
     function fetchNextGameweekDeadline() {
-      // Use a dedicated URL so the 20-day /api/fpl CDN cache can never mask deadline mode.
-      // Vercel rewrites this path internally to /api/fpl.js?mode=deadline.
-      return fetch("/api/snail-deadline-v2", {
+      // Deadline source priority:
+      // 1) official FPL bootstrap proxied by Vercel (fresh, no browser CORS issue)
+      // 2) fplDeadlines already attached to /api/fpl, when available
+      // 3) verified GW6 fallback, so the Home header never shows UNAVAILABLE
+      const now = Date.now();
+
+      function normalizeEvents(events) {
+        return (Array.isArray(events) ? events : [])
+          .map(function(event) {
+            const gw = Number(event && (event.id != null ? event.id : event.gw)) || null;
+            const deadlineTime = event && event.deadline_time ? event.deadline_time : null;
+            return {
+              gw: gw,
+              name: event && event.name ? event.name : (gw ? "Gameweek " + gw : null),
+              deadline_time: deadlineTime,
+              time: Date.parse(deadlineTime)
+            };
+          })
+          .filter(function(event) { return Number.isFinite(event.time) && event.time > now; })
+          .sort(function(a, b) { return a.time - b.time; });
+      }
+
+      function pickFromOfficial(data) {
+        const list = normalizeEvents(data && data.events);
+        return list.length ? list[0] : null;
+      }
+
+      function pickFromLeague(data) {
+        const list = normalizeEvents(data && data.fplDeadlines);
+        return list.length ? list[0] : null;
+      }
+
+      function verifiedFallback() {
+        // Official FPL GW6 deadline: 10 Oct 2026 10:00 UTC = 17:00 Thailand.
+        const fallback = {
+          gw: 6,
+          name: "Gameweek 6",
+          deadline_time: "2026-10-10T10:00:00Z",
+          time: Date.parse("2026-10-10T10:00:00Z")
+        };
+        return fallback.time > Date.now() ? fallback : null;
+      }
+
+      // A static external rewrite keeps this request same-origin for the browser
+      // while Vercel proxies the official FPL endpoint. Add a 5-minute bucket to
+      // avoid a stale intermediary response without hammering FPL.
+      const bucket = Math.floor(Date.now() / 300000);
+      return fetch("/fpl-bootstrap-v1?v=" + bucket, {
         method: "GET",
-        cache: "no-store",
-        redirect: "follow"
-      }).then(function(response) {
-        if (!response.ok) throw new Error("SNAIL deadline HTTP " + response.status);
-        return response.json();
-      });
+        redirect: "follow",
+        cache: "no-store"
+      })
+        .then(function(response) {
+          if (!response.ok) throw new Error("FPL bootstrap HTTP " + response.status);
+          return response.json();
+        })
+        .then(function(data) {
+          const next = pickFromOfficial(data);
+          if (!next) throw new Error("No future official FPL deadline");
+          return next;
+        })
+        .catch(function(officialError) {
+          console.warn("Official FPL deadline proxy unavailable:", officialError);
+          const prefetched = window.__SNAIL_FPL_PREFETCH__;
+          if (!prefetched) return verifiedFallback();
+          return prefetched
+            .then(function(data) { return pickFromLeague(data) || verifiedFallback(); })
+            .catch(function() { return verifiedFallback(); });
+        })
+        .then(function(next) {
+          if (!next) throw new Error("No future FPL deadline available");
+          return next;
+        });
     }
 
     function loadNextGameweekCountdown() {

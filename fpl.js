@@ -143,7 +143,28 @@ export default async function handler(req, res) {
       });
     }
 
-    JSON.parse(body);
+    // Keep the existing league payload intact, but attach the official FPL
+    // deadline schedule to the SAME response. The Home countdown can then use
+    // the data request Snail already makes, with no extra API route/call.
+    const payload = JSON.parse(body);
+    try {
+      const bootstrap = await fetchOfficialFplJson(FPL_BASE + "/bootstrap-static/?_=" + Date.now());
+      const events = Array.isArray(bootstrap && bootstrap.events) ? bootstrap.events : [];
+      payload.fplDeadlines = events
+        .filter(function(event) { return event && event.id && event.deadline_time; })
+        .map(function(event) {
+          return {
+            gw: Number(event.id) || null,
+            name: event.name || ("Gameweek " + event.id),
+            deadline_time: event.deadline_time
+          };
+        });
+    } catch (deadlineError) {
+      // Never break league data if the external FPL endpoint is temporarily down.
+      payload.fplDeadlines = [];
+    }
+
+    const mergedBody = JSON.stringify(payload);
 
     res.setHeader("Content-Type", "application/json; charset=utf-8");
 
@@ -156,7 +177,7 @@ export default async function handler(req, res) {
     res.setHeader("Vercel-Cache-Tag", "snail-fpl-data");
     res.setHeader("X-Snail-Cache-Policy", "shared-cdn-20d");
 
-    return res.status(200).send(body);
+    return res.status(200).send(mergedBody);
   } catch (error) {
     res.setHeader("Cache-Control", "no-store");
     return res.status(502).json({

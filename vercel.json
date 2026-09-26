@@ -2,8 +2,8 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/api/snail-deadline-v2",
-      "destination": "/api/fpl.js?mode=deadline"
+      "source": "/fpl-bootstrap-v1",
+      "destination": "https://fantasy.premierleague.com/api/bootstrap-static/"
     },
     {
       "source": "/api/fpl",
@@ -11,6 +11,19 @@
     }
   ],
   "headers": [
+    {
+      "source": "/fpl-bootstrap-v1",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=300, stale-while-revalidate=300"
+        },
+        {
+          "key": "Vercel-CDN-Cache-Control",
+          "value": "public, max-age=300, stale-while-revalidate=300"
+        }
+      ]
+    },
     {
       "source": "/",
       "headers": [
