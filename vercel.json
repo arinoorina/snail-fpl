@@ -2,53 +2,15 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/api/fpl",
-      "destination": "/api/fpl.js"
+      "source": "/api/snail-deadline-v2",
+      "destination": "/api/fpl.js?mode=deadline"
     },
     {
-      "source": "/api/deadline",
-      "destination": "/api/deadline.js"
+      "source": "/api/fpl",
+      "destination": "/api/fpl.js"
     }
   ],
   "headers": [
-    {
-      "source": "/api/fpl",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, s-maxage=1728000, stale-while-revalidate=86400, stale-if-error=1728000"
-        },
-        {
-          "key": "CDN-Cache-Control",
-          "value": "public, max-age=1728000, stale-while-revalidate=86400, stale-if-error=1728000"
-        },
-        {
-          "key": "Vercel-CDN-Cache-Control",
-          "value": "public, max-age=1728000, stale-while-revalidate=86400, stale-if-error=1728000"
-        },
-        {
-          "key": "Vercel-Cache-Tag",
-          "value": "snail-fpl-data"
-        }
-      ]
-    },
-    {
-      "source": "/api/deadline",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, s-maxage=300, stale-while-revalidate=300"
-        },
-        {
-          "key": "CDN-Cache-Control",
-          "value": "public, max-age=300, stale-while-revalidate=300"
-        },
-        {
-          "key": "Vercel-CDN-Cache-Control",
-          "value": "public, max-age=300, stale-while-revalidate=300"
-        }
-      ]
-    },
     {
       "source": "/",
       "headers": [

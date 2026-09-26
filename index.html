@@ -9620,24 +9620,16 @@ function renderStatsChipPerformance(){
     }
 
     function fetchNextGameweekDeadline() {
-      const urls = ["/api/deadline", "/api/deadline.js"];
-      let index = 0;
-
-      function tryNext() {
-        if (index >= urls.length) return Promise.reject(new Error("SNAIL deadline endpoint unavailable"));
-        const url = urls[index++];
-        return fetch(url + "?t=" + Date.now(), { method: "GET", cache: "no-store" })
-          .then(function(response) {
-            if (!response.ok) throw new Error("SNAIL deadline HTTP " + response.status + " @ " + url);
-            return response.json();
-          })
-          .catch(function(error) {
-            if (index < urls.length) return tryNext();
-            throw error;
-          });
-      }
-
-      return tryNext();
+      // Use a dedicated URL so the 20-day /api/fpl CDN cache can never mask deadline mode.
+      // Vercel rewrites this path internally to /api/fpl.js?mode=deadline.
+      return fetch("/api/snail-deadline-v2", {
+        method: "GET",
+        cache: "no-store",
+        redirect: "follow"
+      }).then(function(response) {
+        if (!response.ok) throw new Error("SNAIL deadline HTTP " + response.status);
+        return response.json();
+      });
     }
 
     function loadNextGameweekCountdown() {
