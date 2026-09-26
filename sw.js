@@ -1,4 +1,4 @@
-const CACHE = "snail-fpl-shell-v5-session1h";
+const CACHE = "snail-fpl-shell-v5-15-countdown-fix";
 const SHELL = [
   "/",
   "/manifest.webmanifest",

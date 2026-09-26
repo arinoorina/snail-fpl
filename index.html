@@ -3876,7 +3876,7 @@
   line-height: 1;
   font-weight: 900;
 }
-.home-next-gw.is-unavailable { display: none; }
+.home-next-gw.is-unavailable { opacity: .72; }
 .home-welcome-logo {
   position: relative;
   z-index: 2;
@@ -5374,7 +5374,7 @@
           <div id="homeNextGW" class="home-next-gw is-unavailable" aria-live="polite">
             <div class="home-next-gw-copy">
               <span class="home-next-gw-label">NEXT GAMEWEEK</span>
-              <strong id="homeNextGWName" class="home-next-gw-name">GW-</strong>
+              <strong id="homeNextGWName" class="home-next-gw-name">LOADING</strong>
             </div>
             <div class="home-next-gw-time" aria-label="Countdown in days, hours and minutes">
               <span class="home-next-gw-unit"><strong id="homeNextGWDays">--</strong><small>D</small></span>
@@ -9619,19 +9619,37 @@ function renderStatsChipPerformance(){
       document.getElementById("homeNextGWMinutes").textContent = String(minutes).padStart(2, "0");
     }
 
+    function fetchNextGameweekDeadline() {
+      const urls = ["/api/deadline", "/api/deadline.js"];
+      let index = 0;
+
+      function tryNext() {
+        if (index >= urls.length) return Promise.reject(new Error("SNAIL deadline endpoint unavailable"));
+        const url = urls[index++];
+        return fetch(url + "?t=" + Date.now(), { method: "GET", cache: "no-store" })
+          .then(function(response) {
+            if (!response.ok) throw new Error("SNAIL deadline HTTP " + response.status + " @ " + url);
+            return response.json();
+          })
+          .catch(function(error) {
+            if (index < urls.length) return tryNext();
+            throw error;
+          });
+      }
+
+      return tryNext();
+    }
+
     function loadNextGameweekCountdown() {
       const wrap = document.getElementById("homeNextGW");
       const name = document.getElementById("homeNextGWName");
       if (!wrap || !name) return;
 
-      fetch("/api/deadline", {
-        method: "GET",
-        cache: "no-store"
-      })
-        .then(function(response) {
-          if (!response.ok) throw new Error("SNAIL deadline HTTP " + response.status);
-          return response.json();
-        })
+      // Always keep the countdown block visible so API problems are obvious.
+      wrap.classList.add("is-unavailable");
+      name.textContent = "LOADING";
+
+      fetchNextGameweekDeadline()
         .then(function(data) {
           if (!data || !data.deadline_time) throw new Error("No future FPL deadline found");
 
@@ -9653,7 +9671,12 @@ function renderStatsChipPerformance(){
         .catch(function(error) {
           console.warn("SNAIL next GW countdown unavailable:", error);
           snailNextGWDeadline = null;
+          name.textContent = "UNAVAILABLE";
+          document.getElementById("homeNextGWDays").textContent = "--";
+          document.getElementById("homeNextGWHours").textContent = "--";
+          document.getElementById("homeNextGWMinutes").textContent = "--";
           wrap.classList.add("is-unavailable");
+          setTimeout(loadNextGameweekCountdown, 60000);
         });
     }
 
