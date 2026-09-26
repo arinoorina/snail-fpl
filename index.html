@@ -3809,6 +3809,74 @@
   font-weight: 800;
   letter-spacing: 1.25px;
 }
+
+/* HOME · NEXT GAMEWEEK COUNTDOWN */
+.home-next-gw {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px 7px 11px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 13px;
+  background: rgba(255,255,255,.09);
+  color: #fff;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+.home-next-gw-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 66px;
+}
+.home-next-gw-label {
+  color: #d9c9f2;
+  font-size: 7px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: .9px;
+  white-space: nowrap;
+}
+.home-next-gw-name {
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.15;
+  font-weight: 1000;
+  white-space: nowrap;
+}
+.home-next-gw-time {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.home-next-gw-unit {
+  display: flex;
+  align-items: baseline;
+  gap: 1px;
+}
+.home-next-gw-unit strong {
+  min-width: 18px;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 1000;
+  text-align: right;
+}
+.home-next-gw-unit small {
+  color: #d9c9f2;
+  font-size: 6px;
+  line-height: 1;
+  font-weight: 900;
+}
+.home-next-gw-sep {
+  color: rgba(255,255,255,.42);
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 900;
+}
+.home-next-gw.is-unavailable { display: none; }
 .home-welcome-logo {
   position: relative;
   z-index: 2;
@@ -4115,6 +4183,12 @@
   .home-welcome-title { font-size: 28px; }
   .home-welcome-logo { width: 82px; }
   .home-welcome-tag { font-size: 8px; letter-spacing: .8px; }
+  .home-next-gw { margin-top: 10px; gap: 7px; padding: 6px 8px; }
+  .home-next-gw-copy { min-width: 58px; }
+  .home-next-gw-label { font-size: 6px; letter-spacing: .7px; }
+  .home-next-gw-name { font-size: 10px; }
+  .home-next-gw-unit strong { min-width: 16px; font-size: 13px; }
+  .home-next-gw-unit small { font-size: 5px; }
   .home-table-head, .home-league-row { grid-template-columns: 34px minmax(0,1fr) 42px 22px 46px 14px; column-gap: 4px; padding-left: 5px; padding-right: 5px; }
   .home-team-logo { width: 27px; height: 27px; flex-basis: 27px; }
   .home-team-name { font-size: 11px; }
@@ -5296,6 +5370,20 @@
           <div class="home-welcome-title">SNAIL FPL <span>26/27</span></div>
           <div class="home-welcome-thai">PLAY HARD · TRACK TOGETHER</div>
           <div class="home-welcome-tag">SAME GAME · DIFFERENT FRIENDS</div>
+
+          <div id="homeNextGW" class="home-next-gw is-unavailable" aria-live="polite">
+            <div class="home-next-gw-copy">
+              <span class="home-next-gw-label">NEXT GAMEWEEK</span>
+              <strong id="homeNextGWName" class="home-next-gw-name">GW-</strong>
+            </div>
+            <div class="home-next-gw-time" aria-label="Countdown in days, hours and minutes">
+              <span class="home-next-gw-unit"><strong id="homeNextGWDays">--</strong><small>D</small></span>
+              <span class="home-next-gw-sep">:</span>
+              <span class="home-next-gw-unit"><strong id="homeNextGWHours">--</strong><small>H</small></span>
+              <span class="home-next-gw-sep">:</span>
+              <span class="home-next-gw-unit"><strong id="homeNextGWMinutes">--</strong><small>M</small></span>
+            </div>
+          </div>
         </div>
         <img class="home-welcome-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJsAAACgCAYAAAAb3B7iAAAPiUlEQVR4nO2debRd0x3HP0+IhCCoSE2NpKzGUGnVPDToIFW0xlBWUYpqdbVm1cpCuyhtzWkNraaUVimiKanFQpcVSpMoRSMSIoQMIhJJvMjtH797vZPzzj7jnu49+7PWW+++M+yz373fu8ff0NVoNAgEbLCa6woE6kMQW8AaQWwBawSxBawRxBawRhBbwBpBbAFrBLEFrBHEFrBGEFvAGkFsAWsEsQWsEcQWsEYQW8AaQWwBawSxBawRxFaOZcD6rivRbgSxFecgYE3gWdcVaTe6gll4YaJv2DDgFVcVaTdCy1aMf8f+Dq1bATpdbEM1lvVl4DOxY2sD+2h8RkfT6WI7k1W7vTifap6/JEdZDyiOP1y0UnWl08dsg4E3m6+3AV6InY/+810p5bwCbJly/izgioy6vAesk3FNR9PpLducyOv/AlfFzncBc4GXU8o4hXShAVyecm5NRNQDgF9llNOqU0fS6WKL0g2cDvwldnwQsFXKfWNzln+f4vi2sWep+DUiyo7tajq9GwX4AFij+btv81je1uMt0gUSR1XuoGZZSefPoKcLnkl2K9q21KFlm4ys+F8E3NY81gDOBZ5Jue80igkNYJ7i+Nv0Ftonm/WIjvX2L/i8tqIOLVuc+D/8NrBxjuvycihwd8r5C4ExinMdO16DerRsWQwCHo8dW1yhvLsUx/shAh4TOfYoIrCzSBZ8R1Ense2Oeta5J/KBA5yNLNZW4crY33cCSxOuW9L8fQXSwnY0depGbf+jrS4x67nrImtwHU+dWrbXLT9vJfkEvsh0RXyhTmK71fLzOnqwX4Y6daPr4Gcr8gGyy9Dx1Kll0zUu0v3tPFpzed5Sp5YNegtlLjAFeBF4HngNmIUszi4ClgMfNq/tE3m9PbLyvwuy4l+lZapNd1s3sZ0GTABmGCh7AHAUsguwLzAwxz1vApsYqIuX1E1sttkU+BZwBKtuyLc4ELjfao0cUlex7QYcAowENkc8pfqm3dDkFuB4pBvdFTGonFXw2ac3yxhBjbpQqJfY7gQOM/yM55B90duRcWAgQp3E5uIfnQFcT7YVby0IYpNB+gxgNrI/+TYyE12G7AL0RzbrBwPDEfe9oqZHLe5A/B2eL3l/W1MnsY1Fxlfj0Lt1NRI4GPg8vb2v0qjVeA3qJTabDAdOQmzbNgFWT7gmiC1ghC0QS+GDkfU3lcFmRxPEZp/dgb2Ay1xXxDZBbAFr1GkjPs72yOLqWOAJZDa6DNn/bCDWGAuASYgp9x4kj706iXH0uBM2gN/pLLwuLds2yJjpUI1lzkTMv+OOz+1KmhC0TGY6uWU7HnFcaSDrWjqFBjAEEVurFbhac/k2mZlxXuWAXYhOa9lGIh7vGzqswxLgcODvDutQlDwiqNy6dUrLdj3yhj2CW6GBeGZNoLfbnq9skHF+ma4HtXvLdj9wgOtK5OAC4KeuK5GCqZZtI+BU5Av4h3YV2zjgWNeVKMGJwM2uK5HAP5HZtoqJSDDEIryLuCl+RLuJbTRivtPu+LhVtRi1c3bR+q5AzOhXoZ3GbJPpDKGBdFsXuq5EjAHAebFjP6C40IaTIDRoD7ENRD6cEW6roZ0xwKuuKxHjUmQ9EsSc/coSZSiXmHwX203AO64rYZAt8C/43+zm77I+tvNVJ3wW2/vIt6sONPDHUbkVwWllyfuVkTp9FNso5M3v77oillmGBAh0TcuZu8ok5k9JB30T21+RBdG6Mg3Y0XEdWsOWKmIbnXTQJyuGmcAnXFfCA55GDCtdxWtbkn1JJvtFXj8G/A2Y54vYfBsku0YV7NkGre2pKmPIh5q/G4hvBuBHNxqEloyr9+X95u+yDdGDkdfHRU+4FlsQWjppyUBM0d38nSdCQBJfirweFz3hUmxBaNkMA35k+ZktsZXpxidFXh8VP+lqbzQIrRg2x2/rIpvo3wZuLHhv63NdQIKpl4uWLQitODpmiHlpxaDrTr2qN7MjrxNtCm2LLQitHGthz6SqNRst8lntSE+cuXhusI+w2Y0uRRJPBMpjozvtj8xIjyV/0OuWiFLjA9tq2SYShKYDG9a+rW40rzaiEZq+mnahjZatUwwefcFG69ZAvNNuyXktKCYFUWy0bEFoejnO0nPyLOpOjLzOdDQyLbYPDJdfR7R6qSfQ2p/eL/Uq4YvN3xNTr2piUmznIUllA+3DxfREUh/NqqEY5rGqI3Y0c2EuZxiTY7awzGGOCeh1YdwaeCnntQuBN5CQFiDBsCcpr45gSmyTkIQUAXPomiicjOSnL8MUCkTbNCG21jqNC1Yiq+1zgPGIMeZUeqcSGookxjgcebM2xL1RQlF0iG0U1YxVFwHr5b3YhNgWFqmAxmfeDJxZoYytkUXMnXRUyAJX0JOQtyy6PvxcwtcttsFI9G1bzEI8uYsmvsjiVuAbmsvUTYNqrfG1SHolHUwlh6ulbrHZ2pJ6B0lQ9q7h59wLHGT4GVWo0pXq7tJWp2f3IRHd4xQbQrsaibxjWmggAZc/ZuE5nUDmWptOsd2lsSwVOwDft/CcKPORFsTHRBnDSt6X6P1UkX2zLtAptkM0lpVEF/BsxjV9kJavFXEy7WcK8IUCz98OO1+oIhxZ8j4n7oK6xDZKUzkqssYmv0AEtAL4HupoPFF2AP7RvO918n0AhwG35bjOFvuXvM+UMeZWaSd1ic3UZns36UK7DhHLDys+Z1PEX7OBmEOncQzwx4rP08UOJe97XGstetgi7aSu2aiprak0oZneDlub9MXpZ5Hw9q4pOyM18f4NRnxeE9HRspkKiKJ6E/fCzr7rEuCalPOftlAHkxT1MciDUmigR2yXaigjjsp9bTvEnd8W3814XjtbtUzWXN6crAt0dKPvoz/ikKpVc2VJciPqsdwDFI83q5My3egiYB3N9fg6cE/aBTrEplsAo5AP0PRzijIA9SzOZd2Kis1EXeeTY/HbR0uHJKH5kMFucco5HyOAJ2FinAY5d1mqim39ivfHUS2hnK35OWU5TnH8RJuVKMlZ6A+RtpICLWvVbvRgMvrpgvQDlseO3YRf4U5Vb+5U3MxQ837YJrrPQl141ZZtz4r3x4kLDfwSGqitQA6zWgshcwbY5D9Ga5GTqmIz/U32MTmFyrtpmtVaCFNzXred0VrkpKrYBmuphfBkwrGbNJavi7TEYjYDwIDs7WbhKlxqL6qKbS0ttRAeTjh2goZyTdi9qSxclUFVDHFHxvkhSLIyL6gqtlTLzILkcgcryGNIhpitgFc0lnuO4vgvNT4jD7Mzzs/IOG+VqmLT2W28prGsFnsjW18vI4aGumzuNlccz7K3s0lZixBjVBWbztZiqcayolyCONKCuPaVjRXrG//KOD/FRiWKUFVsj2qphbBxwjFd/qdPRF53I/t47c6PU87tbK0WBagqNp150JOSq16vsfyo5/Y9VN+60TkTL8ODKeeSZvbOqSq26VpqIRydcKyqE26U+OJw1cF8qgm0YdL2aW3tYhQer/u0EW964THupX9dxfLKZq3TwbUp5/Iu9FZlfNEbfBKbCl3LCfFlgjcqlmfT8z9OPONxC5uZDAtngtYhNp2ThKR/4AxNZcfNgKouDeiciRchaf+4xQJrtYD/Fb1Bh9iu1FBGizGK4ydrKDu+d/kdDWW64BjF8f7YC5JdapXAR++qYSS3Gk/Qs15WlKPpbStXtc5JRgLrIRGVTKIyTngH2S2xwWXAuUVv8nHMpoqAuDurrpflZTy9hVY1Y7FqEG46z5Rq/Lox9oQGJYQG+sR2g6ZyQKxJT1Wc2wNp3RbmLOskku3P8ob0VPFzxXFdIahUqMavee3anKJLbDrGVFHSFnMnIebofZBBf9yEZlqzPl0kmyhdQvX/W+URr9MKJs69iuOpiS4M8LOyN+qMzzYL2ExXYU10G0/uQ7IpUxFWoPYXNell5Yt7Y+nPROeYbR+NZbXQ+UYeSXWhgQSxSeLPGspWofLMv9jgM5NI9XjPQnfkSVPfsm8Sy8pbkLvRt/nuooXxpVXbBXiq7M26Z6OmAq38HklNWDRE1AnIB6JLaKqAgCYnBqpwZHMNPlNFaaGBmWjhbwAf111ojIXIDPh+4AVEiGsBnwMOpGeCoBvbLcyLwPCE49cgcUhscgIVUxmZSrrhOlSCCaaTvD53JNm+AGVJEvde2A2u06Lyl9fUoq7upRAfUC0EmxKaarfEhdD21lGIKbHdQMX+3TNUi6mqta+q3E6yA5CLHuNVNEWqNJ3c9kP83BIrwpPAropzJt68xSSHs3I1NNE29jUthD6GyzfNcuwKDfwSms5tSCutjo8hFPLQQG2yo2NxOImvxf7eBXdCW4nmsbetLq7dBJeWF+oUzOyWPMSqY8DxmHHczov2Xkl3vK40upA03r7HoU0T2hBgrIFnTqcnBfbe6LV+LsP5Jgo1PUFI4nUk74CPLCPdjt90CP6Z9ORod0XahKgSLmaKm+FfWh4QD3IXQgMxk2rgXmhzMCQ0cNOytdgZeASzNmB5OYb0NEGduCOShNGxtcs1sKeQLCpjke7LBfchb7BKaHsQhKbvAQ5btjg3IwGSbXwBVBvcUcYBx1qoiw9YWS3wSWwtLiI9aEoVHiE7L+Zq6I075zvWlqV83Er6CfIGdAFXIbPXKjwFHNEsL0tok6mP0F7G8vqnjy1bGl8BPg9sg0QR2oCelug9xJbuGWRx9JkC5T4HbKu1pn7zWxxEYbchtq2RjMXDmj8b0rP/twAxfnwcWTG3GQB5N2TbyZYXuQ90I5/HTBcPNyG2LZEZZtnkYR8iG8DnY8a7/CrgdAPl+s6jwEiXFdAltr5I11U2jXQabwGXo/ZqymIEkqbSZeY8l6xE3gPniTeqiq0PEpcjNV2zAeYhyxdvImO1NZHueUvEgXmQ5fr4yoXI7N4LqojtAuz7LQbyMQE4wHUl4pQV22jUGfQC7lA55XhBWbG11XpJDZgLfJbqa5JG8XFRN5CfGcBQZIzqtdCgvNiy0tgEzNEN/AZZ/R+KZymD0qgyQQhdqV2eRkKzZmV28ZYq3WgXZjLeBYTliA/C/sh7vRNtLDSoPmYbiAQ+mUbyBnaDnnwBrdfdzZ9lkZ+luM0r4AMrkcA15yDi6odsqaVlcmkr2mkjvi/i1TQCGRCvj1j5rt386df8WQP54FYgi77TkQ36VxGz59nAfGQrLC7wvsAAJDDOZoivxEbI2GhI8++BwLqRZ+WlG2mtFiG7Ii8h5vG2c5Q6o53EFmhzwtJHwBpBbAFrBLEFrBHEFrBGEFvAGkFsAWsEsQWsEcQWsEYQW8AaQWwBawSxBawRxBawxv8BxRE/9BMsq7MAAAAASUVORK5CYII=" alt="SNAIL logo">
       </section>
@@ -9498,6 +9586,78 @@ function renderStatsChipPerformance(){
 
     function openGWRecap(){const r=buildGWRecapData(selectedGW);if(!r)return;document.getElementById('gwRecapNumber').textContent=selectedGW;document.getElementById('recapGWHead').textContent='GW'+selectedGW;setRecapImg('gwRecapKingLogo',r.king.team);document.getElementById('gwRecapKingScore').textContent=Number(r.king.points)||0;document.getElementById('gwRecapKingTeam').textContent=r.king.team;setRecapImg('gwRecapLeaderLogo',r.leader.team);document.getElementById('gwRecapLeaderScore').textContent=r.leader.total;document.getElementById('gwRecapLeaderTeam').textContent=r.leader.team;document.getElementById('gwRecapLeaderNote').textContent='Rank #1 · GW'+selectedGW;const jt=r.jump?r.jump.team:r.leader.team;setRecapImg('gwRecapJumpLogo',jt);document.getElementById('gwRecapJumpScore').textContent=r.jump?r.jump.gain:'–';document.getElementById('gwRecapJumpTeam').textContent=r.jump?r.jump.team:(selectedGW===1?'FIRST GW':'NO CLIMBER');document.getElementById('gwRecapJumpNote').textContent=r.jump?('From '+ordinal(r.jump.previous)+' to '+ordinal(r.jump.current)):(selectedGW===1?'No previous GW':'No upward move');document.getElementById('gwRecapAvg').textContent=r.avg.toFixed(1);document.getElementById('gwRecapLowTitle').textContent='🔻 LOWEST SCORE (GW'+selectedGW+')';document.getElementById('gwRecapLowScore').textContent=(Number(r.low.points)||0)+' PTS';document.getElementById('gwRecapLowTeam').textContent=r.low.team;document.getElementById('gwRecapHotTeam').textContent=r.hot?r.hot.team:'-';setRecapImg('gwRecapHotLogo',r.hot?r.hot.team:'');document.getElementById('gwRecapHotScores').textContent=r.hot?r.hot.scores.join('  |  '):'-';let h='';r.standings.forEach((x,i)=>{const rank=x.rank||i+1,move=x.prevRank!==null&&x.rank!==null?x.prevRank-x.rank:0,mc=move>0?'up':move<0?'down':'same',mt=move>0?'▲ '+move:move<0?'▼ '+Math.abs(move):'–';const chip=String(x.chip||'').trim().toUpperCase();const chipHtml=chip?'<span class="recap-chip '+chip.toLowerCase()+'">'+recapEsc(chip)+'</span>':'';h+='<div class="recap-tr"><div class="recap-rank r'+(rank<=3?rank:'')+'">'+rank+'</div><div class="recap-teamcell"><img class="recap-logo sm" src="'+recapEsc(recapLogo(x.team))+'" alt=""><span class="recap-teamtext">'+recapEsc(x.team)+'</span>'+chipHtml+'</div><div class="recap-num">'+x.points+'</div><div class="recap-num">'+x.total+'</div><div class="recap-move '+mc+'">'+mt+'</div></div>'});document.getElementById('gwRecapTableBody').innerHTML=h;const o=document.getElementById('gwRecapOverlay');o.classList.add('open');if(typeof window.snailPushPopupState==='function')window.snailPushPopupState('recap');o.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';requestAnimationFrame(fitRecapCanvas)}
     function closeGWRecap(){const o=document.getElementById('gwRecapOverlay');if(!o)return;o.classList.remove('open');o.setAttribute('aria-hidden','true');document.body.style.overflow='';if(!window.snailClosingFromBack&&typeof window.snailConsumePopupState==='function')window.snailConsumePopupState()}
+    /* ==========================================================
+       HOME · NEXT GAMEWEEK COUNTDOWN
+       Deadline comes directly from official FPL data.
+       League scores / standings still come from the existing Sheet.
+    ========================================================== */
+    let snailNextGWDeadline = null;
+    let snailNextGWTimer = null;
+
+    function renderNextGameweekCountdown() {
+      const wrap = document.getElementById("homeNextGW");
+      if (!wrap || !snailNextGWDeadline) return;
+
+      const remaining = snailNextGWDeadline.time - Date.now();
+      if (remaining <= 0) {
+        document.getElementById("homeNextGWDays").textContent = "00";
+        document.getElementById("homeNextGWHours").textContent = "00";
+        document.getElementById("homeNextGWMinutes").textContent = "00";
+        clearInterval(snailNextGWTimer);
+        snailNextGWTimer = null;
+        setTimeout(loadNextGameweekCountdown, 60000);
+        return;
+      }
+
+      const totalMinutes = Math.floor(remaining / 60000);
+      const days = Math.floor(totalMinutes / 1440);
+      const hours = Math.floor((totalMinutes % 1440) / 60);
+      const minutes = totalMinutes % 60;
+
+      document.getElementById("homeNextGWDays").textContent = String(days).padStart(2, "0");
+      document.getElementById("homeNextGWHours").textContent = String(hours).padStart(2, "0");
+      document.getElementById("homeNextGWMinutes").textContent = String(minutes).padStart(2, "0");
+    }
+
+    function loadNextGameweekCountdown() {
+      const wrap = document.getElementById("homeNextGW");
+      const name = document.getElementById("homeNextGWName");
+      if (!wrap || !name) return;
+
+      fetch("/api/deadline", {
+        method: "GET",
+        cache: "no-store"
+      })
+        .then(function(response) {
+          if (!response.ok) throw new Error("SNAIL deadline HTTP " + response.status);
+          return response.json();
+        })
+        .then(function(data) {
+          if (!data || !data.deadline_time) throw new Error("No future FPL deadline found");
+
+          const deadline = Date.parse(data.deadline_time);
+          if (!Number.isFinite(deadline)) throw new Error("Invalid FPL deadline");
+
+          snailNextGWDeadline = {
+            gw: Number(data.gw) || null,
+            time: deadline
+          };
+
+          name.textContent = snailNextGWDeadline.gw ? "GW" + snailNextGWDeadline.gw : "NEXT GW";
+          wrap.classList.remove("is-unavailable");
+
+          if (snailNextGWTimer) clearInterval(snailNextGWTimer);
+          renderNextGameweekCountdown();
+          snailNextGWTimer = setInterval(renderNextGameweekCountdown, 30000);
+        })
+        .catch(function(error) {
+          console.warn("SNAIL next GW countdown unavailable:", error);
+          snailNextGWDeadline = null;
+          wrap.classList.add("is-unavailable");
+        });
+    }
+
+
     /* =========================
        START APP
     ========================= */
@@ -9508,6 +9668,7 @@ function renderStatsChipPerformance(){
       // Google Sheet is the ONLY source of league data.
       // Do not render the built-in demo/mock dataset.
       loadFPLDataFromSheet();
+      loadNextGameweekCountdown();
 
     }
 
